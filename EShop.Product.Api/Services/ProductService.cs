@@ -6,7 +6,7 @@ namespace EShop.Product.Api.Services
 {
     public class ProductService : IProductService
     {
-        private readonly IProductRepository _productRepository;
+        private IProductRepository _productRepository;
 
         public ProductService(IProductRepository productRepository)
         {
