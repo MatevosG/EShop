@@ -11,19 +11,14 @@ namespace EShop.Infrastructure.EventBus
             var rabbitMq = new RabbitMqOption();
             configuration.GetSection("rabbitmq").Bind(rabbitMq);
 
-            services.AddMassTransit(x =>
-            {
-                x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
-                {
-                    cfg.Host(new Uri(rabbitMq.ConnectionString), hostCfg =>
-                    {
-                        hostCfg.Username(rabbitMq.UserName);
-                        hostCfg.Password(rabbitMq.Password);
-                    });
-                }));
+            services.AddMassTransit(config => {
+                config.UsingRabbitMq((ctx, cfg) => {
+                    cfg.Host(rabbitMq.ConnectionString);
+                });
             });
-      
-          //  services.AddSingleton<IBusControl>();
+            services.AddMassTransitHostedService();
+
+            //  services.AddSingleton<IBusControl>();
 
             return services;
         }

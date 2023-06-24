@@ -1,5 +1,6 @@
 ﻿using EShop.Infrastructure.Command.Product;
 using MassTransit;
+using MassTransit.Transports;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,11 +10,12 @@ namespace EShop.ApiGateway.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private IBusControl _bus;
+        private readonly IPublishEndpoint _publishEndpoint;
 
-        public ProductController(IBusControl busControl)
+        public ProductController(IPublishEndpoint publishEndpoint)
         {
-            _bus = busControl;
+            
+            _publishEndpoint = publishEndpoint;
         }
 
         [HttpGet]
@@ -26,13 +28,9 @@ namespace EShop.ApiGateway.Controllers
         [HttpPost]
         public async Task<IActionResult> Add([FromForm] CreateProduct createProduct)
         {
-            var uri = new Uri("rabbitmq://localhost/create_product");
-
-            var endPoint = await _bus.GetSendEndpoint(uri);
-
-            await _bus.Send(endPoint);
-
+            await _publishEndpoint.Publish(createProduct);
             return Accepted("Product Created");
         }
+      
     }
 }

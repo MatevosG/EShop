@@ -22,38 +22,31 @@ builder.Services.AddMongoDb(builder.Configuration);
 
 builder.Services.AddScoped<CreateProductHandler>();
 
-//builder.Services.AddRabbitMq(builder.Configuration);
-
 var rabbitMq = new RabbitMqOption();
 builder.Configuration.GetSection("rabbitmq").Bind(rabbitMq);
 
-builder.Services.AddMassTransit(x =>
+builder.Services.AddMassTransit(config =>
 {
-    x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(cfg =>
+
+    config.AddConsumer<CreateProductHandler>();
+
+    config.UsingRabbitMq((ctx, cfg) =>
     {
-        x.AddConsumer<CreateProductHandler>();
+        cfg.Host(rabbitMq.ConnectionString);
 
-        cfg.Host(new Uri(rabbitMq.ConnectionString), hostCfg =>
+        cfg.ReceiveEndpoint("CreateProduct", c =>
         {
-            hostCfg.Username(rabbitMq.UserName);
-            hostCfg.Password(rabbitMq.Password);
+            c.ConfigureConsumer<CreateProductHandler>(ctx);
         });
-
-        cfg.ReceiveEndpoint("create_productr", ep => 
-        {
-            ep.PrefetchCount = 16;
-            ep.UseMessageRetry(retrycpnfig => { retrycpnfig.Interval(2, 100); });
-            ep.ConfigureConsumer<CreateProductHandler>(provider);
-        });
-    }));
+    });
 });
 
-
+builder.Services.AddMassTransitHostedService();
 
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -64,14 +57,12 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-var busControl = app.Services.GetRequiredService<IBusControl>();
-
-busControl.Start();
-
 var dbInitializer = app.Services.GetService<IDatabaseInitializer>();
 
- dbInitializer.InitializeAsync();
+dbInitializer.InitializeAsync();
 
 app.MapControllers();
 
 app.Run();
+
+
