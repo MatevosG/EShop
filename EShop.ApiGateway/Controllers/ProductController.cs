@@ -1,4 +1,6 @@
 ﻿using EShop.Infrastructure.Command.Product;
+using EShop.Infrastructure.Event.Product;
+using EShop.Infrastructure.Query;
 using MassTransit;
 using MassTransit.Transports;
 using Microsoft.AspNetCore.Http;
@@ -11,18 +13,20 @@ namespace EShop.ApiGateway.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IPublishEndpoint _publishEndpoint;
+        private readonly IRequestClient<GetProductById> _request;
 
-        public ProductController(IPublishEndpoint publishEndpoint)
+        public ProductController(IPublishEndpoint publishEndpoint, IRequestClient<GetProductById> request)
         {
-            
             _publishEndpoint = publishEndpoint;
+            _request = request;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromForm] CreateProduct createProduct)
+        public async Task<IActionResult> Get(string productId)
         {
-            await Task.CompletedTask;
-            return Accepted("Product Created");
+            var product = await _request.GetResponse<ProductCreated>(new GetProductById { ProductId = productId });
+
+            return Ok(product);
         }
 
         [HttpPost]

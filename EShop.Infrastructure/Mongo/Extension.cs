@@ -29,7 +29,6 @@ namespace EShop.Infrastructure.Mongo
             services.AddSingleton<IDatabaseInitializer, MongoInitializer>();
 
             return services;
-
             
         }
     }
