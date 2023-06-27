@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EShop.Infrastructure.Security
+namespace EShop.Infrastructure.Authentication
 {
-    public interface IEncrypter
+    public interface IAuthenticationHandler
     {
-        string GetSalt();
-        string GetHash(string value);
+        JwtAuthToken Create(Guid userId);
     }
 }

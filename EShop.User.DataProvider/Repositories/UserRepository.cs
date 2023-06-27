@@ -31,9 +31,10 @@ namespace EShop.User.DataProvider.Repositories
         {
             var user =  _collection.AsQueryable().Where(x=>x.UserName == createUser.UserName).FirstOrDefault();
 
-            if (user == null)
-                throw new Exception("user not found");
             await Task.CompletedTask;
+
+            if (user == null)
+                return null;
 
             return new UserCreated
             {

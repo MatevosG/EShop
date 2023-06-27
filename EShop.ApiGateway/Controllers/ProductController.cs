@@ -35,6 +35,5 @@ namespace EShop.ApiGateway.Controllers
             await _publishEndpoint.Publish(createProduct);
             return Accepted("Product Created");
         }
-      
     }
 }

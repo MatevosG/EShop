@@ -8,15 +8,13 @@ namespace EShop.User.DataProvider.Extension
     {
         public static CreateUser SetPassword(this CreateUser user, IEncrypter encrypter)
         {
-            var salt = encrypter.GetSalt();
-            user.Password = encrypter.GetHash(user.Password, salt);
-
+            user.Password = encrypter.GetHash(user.Password);
             return user;
         }
 
-        public static bool ValidatePassword(this UserCreated user, UserCreated savedUser, IEncrypter encrypter)
+        public static bool ValidatePassword(this UserCreated user, LoginUser savedUser, IEncrypter encrypter)
         {
-            return savedUser.Password.Equals(encrypter.GetHash(user.Password,encrypter.GetSalt()));
+            return user.Password.Equals(encrypter.GetHash(savedUser.Password));
         }
     }
 }

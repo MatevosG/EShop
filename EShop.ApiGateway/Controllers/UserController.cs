@@ -20,18 +20,17 @@ namespace EShop.ApiGateway.Controllers
             _publishEndpoint = publishEndpoint;
             _request = request;
         }
-        [HttpPost]
+        [HttpPost("AddUser")]
         public async Task<IActionResult> Add([FromForm] CreateUser user)
         {
             await _publishEndpoint.Publish(user);
             return Accepted("user Created");
         }
 
-        [HttpPost]
+        [HttpPost("LoginUser")]
         public async Task<IActionResult> Login([FromForm] LoginUser loginUser)
         {
             var userresponse = await _request.GetResponse<UserCreated>(loginUser);
-
             return Accepted(userresponse.Message);
         }
     }
