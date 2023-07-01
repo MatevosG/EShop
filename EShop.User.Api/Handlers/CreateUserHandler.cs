@@ -1,10 +1,11 @@
 ﻿using EShop.Infrastructure.Command.User;
 using EShop.User.DataProvider.Services;
+using EvebtBus.Inf.Models;
 using MassTransit;
 
 namespace EShop.User.Api.Handlers
 {
-    public class CreateUserHandler : IConsumer<CreateUser>
+    public class CreateUserHandler : IConsumer<CreateUserEvent>
     {
         private readonly IUserService _userService;
 
@@ -13,9 +14,15 @@ namespace EShop.User.Api.Handlers
             _userService = userService;
         }
 
-        public async Task Consume(ConsumeContext<CreateUser> context)
+        public async Task Consume(ConsumeContext<CreateUserEvent> context)
         {
-            var createdUser = await _userService.AddUser(context.Message);
+            var createdUser = await _userService.AddUser(new CreateUser 
+            {
+                ContactNo = context.Message.ContactNo,
+                EmailId = context.Message.EmailId,
+                Password = context.Message.Password,
+                UserName = context.Message.UserName,
+            });
         }
     }
 }

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="MassTransit" Version="8.0.16" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
@@ -19,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\EShop.Infrastructure\EShop.Infrastructure.csproj" />
     <ProjectReference Include="..\EShop.User.DataProvider\EShop.User.DataProvider.csproj" />
+    <ProjectReference Include="..\EvebtBus.Inf\EvebtBus.Inf.csproj" />
   </ItemGroup>
 
 </Project>

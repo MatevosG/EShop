@@ -1,9 +1,6 @@
-﻿using EShop.Infrastructure.Command.Product;
-using EShop.Infrastructure.Command.User;
-using EShop.Infrastructure.Event.User;
-using EShop.Infrastructure.Query;
+﻿using EShop.Gateway.Api.Models;
+using EvebtBus.Inf.Models;
 using MassTransit;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EShop.ApiGateway.Controllers
@@ -13,24 +10,24 @@ namespace EShop.ApiGateway.Controllers
     public class UserController : ControllerBase
     {
         private readonly IPublishEndpoint _publishEndpoint;
-        private readonly IRequestClient<LoginUser> _request;
+        private readonly IRequestClient<LoginUserEvent> _request;
 
-        public UserController(IPublishEndpoint publishEndpoint, IRequestClient<LoginUser> request)
+        public UserController(IPublishEndpoint publishEndpoint, IRequestClient<LoginUserEvent> request)
         {
             _publishEndpoint = publishEndpoint;
             _request = request;
         }
         [HttpPost("AddUser")]
-        public async Task<IActionResult> Add([FromForm] CreateUser user)
+        public async Task<IActionResult> Add([FromForm] CreateUserEvent user)
         {
             await _publishEndpoint.Publish(user);
             return Accepted("user Created");
         }
 
         [HttpPost("LoginUser")]
-        public async Task<IActionResult> Login([FromForm] LoginUser loginUser)
+        public async Task<IActionResult> Login([FromForm] LoginUserEvent loginUser)
         {
-            var userresponse = await _request.GetResponse<UserCreated>(loginUser);
+            var userresponse = await _request.GetResponse<JwtAuthTokenEventResponse>(loginUser);
             return Accepted(userresponse.Message);
         }
     }

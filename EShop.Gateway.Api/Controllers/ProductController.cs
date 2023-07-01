@@ -1,9 +1,7 @@
-﻿using EShop.Infrastructure.Command.Product;
-using EShop.Infrastructure.Event.Product;
-using EShop.Infrastructure.Query;
+﻿using EShop.Gateway.Api.Models;
+using EvebtBus.Inf.Models;
 using MassTransit;
-using MassTransit.Transports;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EShop.ApiGateway.Controllers
@@ -13,24 +11,25 @@ namespace EShop.ApiGateway.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IPublishEndpoint _publishEndpoint;
-        private readonly IRequestClient<GetProductById> _request;
+        private readonly IRequestClient<GetProductByIdEvent> _request;
 
-        public ProductController(IPublishEndpoint publishEndpoint, IRequestClient<GetProductById> request)
+        public ProductController(IPublishEndpoint publishEndpoint, IRequestClient<GetProductByIdEvent> request)
         {
             _publishEndpoint = publishEndpoint;
             _request = request;
         }
-
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> Get(string productId)
         {
-            var product = await _request.GetResponse<ProductCreated>(new GetProductById { ProductId = productId });
+            var product = await _request.GetResponse<ProductCreatedEvent>(new GetProductByIdEvent { ProductId = productId });
 
             return Ok(product);
         }
 
+        [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Add([FromForm] CreateProduct createProduct)
+        public async Task<IActionResult> Add([FromForm] CreateProductEvent createProduct)
         {
             await _publishEndpoint.Publish(createProduct);
             return Accepted("Product Created");

@@ -34,7 +34,7 @@ builder.Services.AddMassTransit(config =>
     {
         cfg.Host(rabbitMq.ConnectionString);
 
-        cfg.ReceiveEndpoint("GetProductById", c =>
+        cfg.ReceiveEndpoint("GetProductByIdEvent", c =>
         {
             c.ConfigureConsumer<GetProductByIdHandler>(ctx);
         });

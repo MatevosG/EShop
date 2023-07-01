@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EShop.Infrastructure\EShop.Infrastructure.csproj" />
+    <ProjectReference Include="..\EvebtBus.Inf\EvebtBus.Inf.csproj" />
   </ItemGroup>
 
 </Project>

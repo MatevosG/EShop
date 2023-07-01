@@ -1,10 +1,11 @@
 ﻿using EShop.Infrastructure.Query;
 using EShop.Product.DataProvide.Services;
+using EvebtBus.Inf.Models;
 using MassTransit;
 
 namespace Eshop.Product.Query.Api.Handlers
 {
-    public class GetProductByIdHandler : IConsumer<GetProductById>
+    public class GetProductByIdHandler : IConsumer<GetProductByIdEvent>
     {
         private IProductService _productService;
 
@@ -13,10 +14,10 @@ namespace Eshop.Product.Query.Api.Handlers
             _productService = productService;
         }
 
-        public async Task Consume(ConsumeContext<GetProductById> context)
+        public async Task Consume(ConsumeContext<GetProductByIdEvent> context)
         {
             var product = await _productService.GetProduct(context.Message.ProductId);
-            await context.RespondAsync(product);
+            await context.RespondAsync<ProductCreatedEvent>(product);
         }
     }
 }
